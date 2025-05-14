@@ -17,10 +17,23 @@ const app = express();
 // gobal middlwear
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({
-    origin: [process.env.FRONTEND_URL,"https://mern-blog-x6uf.vercel.app"],
-    credentials: true
-}))
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log("CORS origin:", origin);
+      const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        "https://mern-blog-x6uf.vercel.app",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // create a database
 mongoose.connect(process.env.MONGODB_CONN, { dbName: 'mern-blog' })
